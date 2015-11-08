@@ -1,5 +1,5 @@
-(defproject bijoytounicode "0.1.0-SNAPSHOT"
-  :description "FIXME: write this!"
+(defproject bijoytounicode "0.1.1-SNAPSHOT"
+  :description "বিজয়-টু-উইনিকোড কনভার্টার"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
