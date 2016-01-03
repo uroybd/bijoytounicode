@@ -8,7 +8,10 @@
 
 
 (defn replacer [string]
-  (let [data (filterv #(not= % "") (clojure.string/split string #""))
+  (let [data (mapv (fn [x]
+                     (if-not (= x " ")
+                       (str (char (- (int (.charCodeAt x 0)) 8)))
+                       " ")) (filterv #(not= % "") (clojure.string/split string #"")))
         convdata (mapv #(if (contains? dmap %)
                           (get dmap %)
                           %) data)
@@ -75,22 +78,29 @@
     (clojure.string/replace (apply str karcombined) #"্্" "্")))
 
 
-(defn atom-input [value]
-  [:textarea {:rows 10 :style {:width "100%"} :value @value :on-change #(reset! value (-> % .-target .-value))}])
+(defn atom-input [value out]
+  [:textarea {:rows 10
+              :style {:width "100%"}
+              :value @value
+              :on-change (fn [e]
+                           (do
+                             (reset! value (-> e .-target .-value))
+                             (reset! out (replacer (-> e .-target .-value)))))}])
 
 (defn atom-output [value]
-  [:textarea {:rows 10 :style {:width "100%"} :value value}])
+  [:textarea {:rows 10 :style {:width "100%"} :value @value}])
 
 (defn shared-state []
   (let [val (reagent/atom "Avwg me ‡`‡Lï‡b
 ‡¶‡c wM‡q Kwi
-evOjvq wPrKvi!")]
+evOjvq wPrKvi!")
+        unival (reagent/atom (replacer @val))]
     (fn []
       [:div
        [:p "বিজয়ে টাইপ করা বাঙলা লিখুন বা পেস্ট করুন"]
-       [:p [atom-input val]]
+       [:p [atom-input val unival]]
        [:p "ইউনিকোডে কনভার্ট করা টেক্সট:"]
-       [:p [atom-output (replacer @val)]]])))
+       [:p [atom-output unival]]])))
 
 (reagent/render-component [shared-state]
                           (. js/document (getElementById "app")))
@@ -100,4 +110,3 @@ evOjvq wPrKvi!")]
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
 )
-
